@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>ISS Tracker & Orbit Map</title>
+
+    <!-- Leaflet CSS -->
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+>
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- ================= HEADER ================= -->
+    <header class="site-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-title">ISS TRACKER</div>
+                <div class="brand-subtitle">
+                    International Space Station • Live Orbit Tracking
+                </div>
+            </div>
+            <div class="header-controls">
+                <button
+                    id="refreshButton"
+                    class="header-button"
+                    type="button"
+                    aria-label="Refresh ISS position"
+                >
+                    <span id="refreshIcon">↻</span>
+                    <span id="refreshText">Refresh</span>
+                </button>
+                <button
+                    id="themeToggle"
+                    class="theme-button"
+                    type="button"
+                    aria-label="Toggle dark mode"
+                >
+                    <span id="themeIcon">☾</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+    <main>
+        <section class="hero section-container">
+            <div class="hero-content">
+                <span class="eyebrow">
+                    LIVE SATELLITE TRACKING
+                </span>
+                <h1>
+                    ISS TRACKER
+                    <span>&amp; ORBIT MAP</span>
+                </h1>
+                <p>
+                    Track the International Space Station in real time
+                    and explore its current position around Earth.
+                </p>
+            </div>
+        </section>
+
+
+        <!-- ================= MAP ================= -->
+        <section class="map-section section-container">
+            <div class="section-heading">
+                <div>
+                    <span class="section-label">LIVE LOCATION</span>
+                    <h2>International Space Station</h2>
+                </div>
+                <div
+                    id="mapStatus"
+                    class="map-status"
+                >
+                    <span class="status-dot"></span>
+                    <span>Tracking</span>
+                </div>
+            </div>
+
+            <div class="map-wrapper">
+                <div
+                    id="map"
+                    aria-label="Interactive world map showing the ISS"
+                ></div>
+                <div class="map-overlay">
+                    <div class="overlay-title">
+                        CURRENT POSITION
+                    </div>
+                    <div
+                        id="mapCoordinates"
+                        class="overlay-coordinates"
+                    >
+                        Waiting for coordinates...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= CURRENT POSITION ================= -->
+        <section
+            class="position-section section-container"
+        >
+            <div class="section-heading">
+                <div>
+                    <span class="section-label">
+                        LIVE DATA
+                    </span>
+                    <h2>Current ISS Position</h2>
+                </div>
+            </div>
+
+            <div class="position-grid">
+                <!-- Latitude -->
+                <article class="info-card">
+                    <div class="card-icon">
+                        ↕
+                    </div>
+                    <div class="card-content">
+                        <span class="card-label">
+                            Latitude
+                        </span>
+                        <strong id="latitude">
+                            --
+                        </strong>
+                        <small>
+                            degrees
+                        </small>
+                    </div>
+                </article>
+
+                <!-- Longitude -->
+                <article class="info-card">
+                    <div class="card-icon">
+                        ↔
+                    </div>
+                    <div class="card-content">
+                        <span class="card-label">
+                            Longitude
+                        </span>
+                        <strong id="longitude">
+                            --
+                        </strong>
+                        <small>
+                            degrees
+                        </small>
+                    </div>
+                </article>
+
+                <!-- Last Updated -->
+                <article class="info-card">
+                    <div class="card-icon">
+                        ◷
+                    </div>
+                    <div class="card-content">
+                        <span class="card-label">
+                            Last Updated
+                        </span>
+                        <strong id="lastUpdated">
+                            --
+                        </strong>
+                        <small>
+                            local time
+                        </small>
+                    </div>
+                </article>
+
+                <!-- Connection -->
+                <article class="info-card status-card">
+                    <div class="card-icon">
+                        ●
+                    </div>
+                    <div class="card-content">
+                        <span class="card-label">
+                            Connection
+                        </span>
+                        <strong id="connectionStatus">
+                            Connecting...
+                        </strong>
+                        <small id="connectionDetail">
+                            Waiting for API
+                        </small>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ================= PASS OVER ================= -->
+        <section
+            class="prediction-section section-container"
+        >
+            <div class="prediction-card">
+                <div class="prediction-heading">
+                    <span class="section-label">
+                        ORBIT PREDICTION
+                    </span>
+                    <h2>
+                        ISS Pass-Over Prediction
+                    </h2>
+                    <p>
+                        Find out when the ISS is expected to pass
+                        over a specific location.
+                    </p>
+                </div>
+
+                <form
+                    id="predictionForm"
+                    novalidate
+                >
+                    <div class="coordinate-inputs">
+                        <!-- Latitude -->
+                        <div class="input-group">
+                            <label for="predictionLatitude">
+                                Latitude
+                            </label>
+                            <input
+                                id="predictionLatitude"
+                                name="latitude"
+                                type="number"
+                                step="any"
+                                min="-90"
+                                max="90"
+                                placeholder="e.g. 9.0820"
+                                autocomplete="off"
+                            >
+                            <span
+                                id="latitudeError"
+                                class="input-error"
+                            ></span>
+                        </div>
+
+                        <!-- Longitude -->
+                        <div class="input-group">
+                            <label for="predictionLongitude">
+                                Longitude
+                            </label>
+                            <input
+                                id="predictionLongitude"
+                                name="longitude"
+                                type="number"
+                                step="any"
+                                min="-180"
+                                max="180"
+                                placeholder="e.g. 7.4951"
+                                autocomplete="off"
+                            >
+                            <span
+                                id="longitudeError"
+                                class="input-error"
+                            ></span>
+                        </div>
+
+                        <button
+                            id="predictButton"
+                            class="predict-button"
+                            type="submit"
+                        >
+                            <span id="predictButtonText">
+                                Predict Pass-Over
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Prediction Result -->
+                <div
+                    id="predictionResult"
+                    class="prediction-result"
+                    aria-live="polite"
+                >
+                    <div class="result-placeholder">
+                        <span class="result-icon">
+                            ◉
+                        </span>
+                        <p>
+                            Enter your location coordinates
+                            to calculate an ISS pass-over.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SYSTEM STATUS ================= -->
+        <section
+            class="status-section section-container"
+        >
+            <div
+                id="systemStatus"
+                class="system-status"
+            >
+                <span class="status-dot"></span>
+                <span id="systemStatusText">
+                    Connecting to ISS tracking service...
+                </span>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div>
+                <strong>
+                    ISS Tracker &amp; Orbit Map
+                </strong>
+                <span>
+                    Educational Project • FUTMINNA Software Engineering
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Leaflet JavaScript -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  ></script>
+    <!-- Our JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
